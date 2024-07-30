@@ -4,45 +4,44 @@ import { pathFromBezierCurve } from '../utils/formulas';
 const Title = () => {
   const textStyle = {
     fontFamily: '"Joti One", cursive',
-    fontSize: 120,
+    fontSize: 100,
     fill: '#cbca62',
   };
 
-  const aliensLineCurve = {
+  const cannonBallLineCurve = {
     initialAxis: {
-      x: -190,
-      y: -950,
+      x: -300,
+      y: -750,
     },
     initialControlPoint: {
-      x: 95,
+      x: 150,
       y: -50,
     },
     endingControlPoint: {
-      x: 285,
+      x: 450,
       y: -50,
     },
     endingAxis: {
-      x: 380,
+      x: 600,
       y: 0,
     },
   };
 
-  const goHomeLineCurve = {
-    ...aliensLineCurve,
+  const sagaLineCurve = {
     initialAxis: {
-      x: -250,
-      y: -780,
+      x: -130,
+      y: -650,
     },
     initialControlPoint: {
-      x: 125,
-      y: -90,
+      x: 75,
+      y: -30,
     },
     endingControlPoint: {
-      x: 375,
-      y: -90,
+      x: 225,
+      y: -30,
     },
     endingAxis: {
-      x: 500,
+      x: 300,
       y: 0,
     },
   };
@@ -51,22 +50,22 @@ const Title = () => {
     <g filter="url(#shadow)">
       <defs>
         <path
-          id="AliensPath"
-          d={pathFromBezierCurve(aliensLineCurve)}
+          id="CannonBallPath"
+          d={pathFromBezierCurve(cannonBallLineCurve)}
         />
         <path
-          id="GoHomePath"
-          d={pathFromBezierCurve(goHomeLineCurve)}
+          id="SagaPath"
+          d={pathFromBezierCurve(sagaLineCurve)}
         />
       </defs>
       <text {...textStyle}>
-        <textPath xlinkHref="#AliensPath">
-          Aliens,
+        <textPath xlinkHref="#CannonBallPath">
+          Cannon Ball
         </textPath>
       </text>
       <text {...textStyle}>
-        <textPath xlinkHref="#GoHomePath">
-          Go Home!
+        <textPath xlinkHref="#SagaPath">
+          Saga!
         </textPath>
       </text>
     </g>

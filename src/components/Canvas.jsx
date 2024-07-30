@@ -8,8 +8,6 @@ import CurrentScore from './CurrentScore'
 import FlyingObject from './FlyingObject';
 import StartGame from './StartGame';
 import Title from './Title';
-// import Leaderboard from './Leaderboard';
-// import { signIn } from 'auth0-web';
 import CannonBall from './CannonBall';
 import Heart from './Heart';
 
@@ -20,7 +18,7 @@ const Canvas = (props) => {
   const lives = [];
   for (let i = 0; i < props.gameState.lives; i++) {
     const heartPosition = {
-      x: -180 - (i * 70),
+      x: -480 - (i * 70),
       y: 35
     };
     lives.push(<Heart key={i} position={heartPosition}/>);
@@ -57,7 +55,6 @@ const Canvas = (props) => {
       <g>
         <StartGame onClick={() => props.startGame()} />
         <Title />
-        {/* <Leaderboard currentPlayer={props.currentPlayer} authenticate={signIn} leaderboard={props.players} /> */}
       </g>
       }
 
