@@ -20,7 +20,10 @@ function moveObjects(state, action) {
     (now - object.createdAt) < 4000
   ));
 
-  const lostLife = state.gameState.flyingObjects.length > flyingObjects.length;
+  // Separate flying objects and bonus lives
+  const regularFlyingObjects = flyingObjects.filter(object => object.type !== 'BonusLife');
+  const lostLife = state.gameState.flyingObjects.filter(object => object.type !== 'BonusLife').length > regularFlyingObjects.length;
+  
   let lives = state.gameState.lives;
   if (lostLife) {
     lives--;
@@ -39,11 +42,13 @@ function moveObjects(state, action) {
   const objectsDestroyed = checkCollisions(cannonBalls, flyingObjects);
   const cannonBallsDestroyed = objectsDestroyed.map(object => (object.cannonBallId));
   const flyingDiscsDestroyed = objectsDestroyed.map(object => (object.flyingDiscId));
+  const bonusLivesDestroyed = objectsDestroyed.filter(object => (object.type === 'BonusLife')).map(object => (object.flyingDiscId));
 
-  cannonBalls = cannonBalls.filter(cannonBall => (cannonBallsDestroyed.indexOf(cannonBall.id)));
-  flyingObjects = flyingObjects.filter(flyingDisc => (flyingDiscsDestroyed.indexOf(flyingDisc.id)));
+  cannonBalls = cannonBalls.filter(cannonBall => (cannonBallsDestroyed.indexOf(cannonBall.id) === -1));
+  flyingObjects = flyingObjects.filter(flyingDisc => (flyingDiscsDestroyed.indexOf(flyingDisc.id) === -1));
 
   const kills = state.gameState.kills + flyingDiscsDestroyed.length;
+  lives += bonusLivesDestroyed.length; // Gain a life for each bonus life destroyed
 
   return {
     ...newState,

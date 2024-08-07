@@ -4,18 +4,18 @@ import {
 } from '../utils/constants';
 
 export default (state) => {
-  if ( ! state.gameState.started) return state; // game not running
+  if (!state.gameState.started) return state; // game not running
 
   const now = (new Date()).getTime();
   const { lastObjectCreatedAt, flyingObjects } = state.gameState;
   const createNewObject = (
-    now - (lastObjectCreatedAt).getTime() > createInterval &&
+    now - lastObjectCreatedAt > createInterval &&
     flyingObjects.length < maxFlyingObjects
   );
 
-  if ( ! createNewObject) return state; // no need to create objects now
+  if (!createNewObject) return state; // no need to create objects now
 
-  const id = (new Date()).getTime();
+  const id = now;
   const predefinedPosition = Math.floor(Math.random() * maxFlyingObjects);
   const flyingObjectPosition = flyingObjectsStarterPositions[predefinedPosition];
   const newFlyingObject = {
@@ -23,8 +23,9 @@ export default (state) => {
       x: flyingObjectPosition,
       y: flyingObjectsStarterYAxis,
     },
-    createdAt: (new Date()).getTime(),
+    createdAt: now,
     id,
+    type: Math.random() < 0.25 ? 'BonusLife' : 'FlyingObject', // 10% chance of being a BonusLife
   };
 
   return {
@@ -35,7 +36,7 @@ export default (state) => {
         ...state.gameState.flyingObjects,
         newFlyingObject
       ],
-      lastObjectCreatedAt: new Date(),
+      lastObjectCreatedAt: now,
     }
   }
 }

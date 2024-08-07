@@ -26,6 +26,7 @@ const checkCollisions = (cannonBalls, flyingDiscs) => {
         objectsDestroyed.push({
           cannonBallId: cannonBall.id,
           flyingDiscId: flyingDisc.id,
+          type: flyingDisc.type, // Include the type
         });
       }
     });
