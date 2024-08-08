@@ -61,11 +61,24 @@ const Title = () => {
       <text {...textStyle}>
         <textPath xlinkHref="#CannonBallPath">
           Cannon Ball
+          <animate
+            attributeName="opacity"
+            values="1;0;1"
+            dur="4s"
+            repeatCount="indefinite"
+          />
         </textPath>
       </text>
-      <text {...textStyle}>
+      <text {...textStyle} y="120">
         <textPath xlinkHref="#SagaPath">
           Saga!
+          <animate
+            attributeName="opacity"
+            values="0;1;0"
+            dur="4s"
+            begin="2s"
+            repeatCount="indefinite"
+          />
         </textPath>
       </text>
     </g>

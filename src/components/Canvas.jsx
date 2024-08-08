@@ -14,94 +14,113 @@ import Heart from './Heart';
 import Bomb from './Bomb';
 import Instructions from './Instructions'; // Import Instructions component
 
-const Canvas = (props) => {
+const Canvas = ({
+  angle,
+  gameState,
+  trackMouse,
+  startGame,
+  shoot,
+  onDestroyObject,
+}) => {
   const [isInstructionsOpen, setInstructionsOpen] = useState(false);
 
   const gameHeight = 1200;
   const viewBox = [window.innerWidth / -2, 100 - gameHeight, window.innerWidth, gameHeight];
 
-  const lives = [];
-  for (let i = 0; i < props.gameState.lives; i++) {
-    const heartPosition = {
-      x: -480 - (i * 70),
-      y: 35
-    };
-    lives.push(<Heart key={i} position={heartPosition} />);
-  }
+  const lives = Array.from({ length: gameState.lives }, (_, i) => (
+    <Heart key={i} position={{ x: -480 - (i * 70), y: 35 }} />
+  ));
 
   const handleDestroy = (id) => {
-    props.onDestroyObject(id);
+    onDestroyObject(id);
   };
 
   return (
-    <svg
-      id="aliens-go-home-canvas"
-      preserveAspectRatio="xMaxYMax none"
-      onMouseMove={props.trackMouse}
-      viewBox={viewBox}
-      onClick={props.shoot}
-    >
-      <defs>
-        <filter id="shadow">
-          <feDropShadow dx="1" dy="1" stdDeviation="2" />
-        </filter>
-      </defs>
-      <Sky />
-      <Ground />
-
-      {props.gameState.cannonBalls.map(cannonBall => (
-        <CannonBall
-          key={cannonBall.id}
-          position={cannonBall.position}
-        />
-      ))}
-
-      <CannonPipe rotation={props.angle} />
-      <CannonBase />
-      <CurrentScore score={props.gameState.kills} />
-
-      {!props.gameState.started &&
-        <g>
-          <StartGame onClick={() => props.startGame()} />
-          <Title />
-        </g>
-      }
-
-      {props.gameState.flyingObjects.map(flyingObject => {
-        if (flyingObject.type === 'FlyingObject') {
-          return <FlyingObject key={flyingObject.id} position={flyingObject.position} />;
-        } else if (flyingObject.type === 'BonusLife') {
-          return <BonusLife key={flyingObject.id} position={flyingObject.position} />;
-        } else if (flyingObject.type === 'Bomb') {
-          return <Bomb key={flyingObject.id} position={flyingObject.position} id={flyingObject.id} onDestroy={handleDestroy} />;
-        }
-        return null;
-      })}
-
-      {lives}
-
-      <button
-        onClick={() => setInstructionsOpen(true)}
-        style={styles.instructionsButton}
+    <div style={styles.container}>
+      <svg
+        id="aliens-go-home-canvas"
+        preserveAspectRatio="xMaxYMax none"
+        onMouseMove={trackMouse}
+        viewBox={viewBox}
+        onClick={shoot}
       >
-        Instructions
-      </button>
+        <defs>
+          <filter id="shadow">
+            <feDropShadow dx="1" dy="1" stdDeviation="2" />
+          </filter>
+        </defs>
+        <Sky />
+        <Ground />
+
+        {gameState.cannonBalls.map(cannonBall => (
+          <CannonBall key={cannonBall.id} position={cannonBall.position} />
+        ))}
+
+        <CannonPipe rotation={angle} />
+        <CannonBase />
+        <CurrentScore score={gameState.kills} />
+
+        {!gameState.started && (
+          <g>
+            <StartGame onClick={startGame} />
+            <Title />
+          </g>
+        )}
+
+        {gameState.flyingObjects.map(flyingObject => {
+          switch (flyingObject.type) {
+            case 'FlyingObject':
+              return <FlyingObject key={flyingObject.id} position={flyingObject.position} />;
+            case 'BonusLife':
+              return <BonusLife key={flyingObject.id} position={flyingObject.position} />;
+            case 'Bomb':
+              return (
+                <Bomb
+                  key={flyingObject.id}
+                  position={flyingObject.position}
+                  id={flyingObject.id}
+                  onDestroy={handleDestroy}
+                />
+              );
+            default:
+              return null;
+          }
+        })}
+
+        {lives}
+      </svg>
+
+      {!isInstructionsOpen && (
+        <button
+          onClick={() => setInstructionsOpen(true)}
+          style={styles.instructionsButton}
+        >
+          Instructions !
+        </button>
+      )}
 
       <Instructions isOpen={isInstructionsOpen} onClose={() => setInstructionsOpen(false)} />
-    </svg>
+    </div>
   );
 };
 
 const styles = {
+  container: {
+    position: 'relative',
+    width: '100vw',
+    height: '100vh',
+  },
   instructionsButton: {
     position: 'absolute',
-    top: '10px',
-    right: '10px',
+    top: '20px',
+    right: '30px',
     padding: '10px 20px',
-    fontSize: '16px',
+    fontSize: '25px',
+    fontFamily: '"Joti One", cursive',
     cursor: 'pointer',
-    backgroundColor: '#007bff',
-    color: '#fff',
+    backgroundColor: '#30abef',
+    color: '#d6d33e',
+    textShadow: '0.5px 0.5px 0 #000, -0.5px -0.5px 0 #000, 0.5px -0.5px 0 #000, -0.5px 0.5px 0 #000',
     border: 'none',
     borderRadius: '5px',
     zIndex: 1000,
