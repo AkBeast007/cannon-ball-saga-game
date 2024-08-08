@@ -18,6 +18,8 @@ export default (state) => {
   const id = now;
   const predefinedPosition = Math.floor(Math.random() * maxFlyingObjects);
   const flyingObjectPosition = flyingObjectsStarterPositions[predefinedPosition];
+
+  const randomType = Math.random();
   const newFlyingObject = {
     position: {
       x: flyingObjectPosition,
@@ -25,7 +27,7 @@ export default (state) => {
     },
     createdAt: now,
     id,
-    type: Math.random() < 0.25 ? 'BonusLife' : 'FlyingObject', // 10% chance of being a BonusLife
+    type: randomType < 0.15 ? 'BonusLife' : randomType < 0.25 ? 'Bomb' : 'FlyingObject', // 25% chance BonusLife, 15% Bomb, 60% FlyingObject
   };
 
   return {

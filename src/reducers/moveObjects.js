@@ -20,9 +20,8 @@ function moveObjects(state, action) {
     (now - object.createdAt) < 4000
   ));
 
-  // Separate flying objects and bonus lives
-  const regularFlyingObjects = flyingObjects.filter(object => object.type !== 'BonusLife');
-  const lostLife = state.gameState.flyingObjects.filter(object => object.type !== 'BonusLife').length > regularFlyingObjects.length;
+  const regularFlyingObjects = flyingObjects.filter(object => object.type !== 'BonusLife' && object.type !== 'Bomb');
+  const lostLife = state.gameState.flyingObjects.filter(object => object.type !== 'BonusLife' && object.type !== 'Bomb').length > regularFlyingObjects.length;
   
   let lives = state.gameState.lives;
   if (lostLife) {
@@ -40,15 +39,20 @@ function moveObjects(state, action) {
   const angle = calculateAngle(0, 0, x, y);
 
   const objectsDestroyed = checkCollisions(cannonBalls, flyingObjects);
-  const cannonBallsDestroyed = objectsDestroyed.map(object => (object.cannonBallId));
-  const flyingDiscsDestroyed = objectsDestroyed.map(object => (object.flyingDiscId));
-  const bonusLivesDestroyed = objectsDestroyed.filter(object => (object.type === 'BonusLife')).map(object => (object.flyingDiscId));
+  const cannonBallsDestroyed = objectsDestroyed.map(object => object.cannonBallId);
+  const flyingDiscsDestroyed = objectsDestroyed.filter(object => object.type !== 'BonusLife' && object.type !== 'Bomb').map(object => object.flyingDiscId);
+  const bonusLivesDestroyed = objectsDestroyed.filter(object => object.type === 'BonusLife').map(object => object.flyingDiscId);
+  const bombsDestroyed = objectsDestroyed.filter(object => object.type === 'Bomb').map(object => object.flyingDiscId);
 
-  cannonBalls = cannonBalls.filter(cannonBall => (cannonBallsDestroyed.indexOf(cannonBall.id) === -1));
-  flyingObjects = flyingObjects.filter(flyingDisc => (flyingDiscsDestroyed.indexOf(flyingDisc.id) === -1));
+  cannonBalls = cannonBalls.filter(cannonBall => cannonBallsDestroyed.indexOf(cannonBall.id) === -1);
+  flyingObjects = flyingObjects.filter(flyingDisc => (
+    flyingDiscsDestroyed.indexOf(flyingDisc.id) === -1 &&
+    bonusLivesDestroyed.indexOf(flyingDisc.id) === -1 &&
+    bombsDestroyed.indexOf(flyingDisc.id) === -1
+  ));
 
-  const kills = state.gameState.kills + flyingDiscsDestroyed.length;
-  lives += bonusLivesDestroyed.length; // Gain a life for each bonus life destroyed
+  const kills = state.gameState.kills + flyingDiscsDestroyed.length - bombsDestroyed.length * 2; // Decrease score by 2 for each bomb hit
+  lives += bonusLivesDestroyed.length - bombsDestroyed.length; // Increase lives for bonus life and decrease for bombs
 
   return {
     ...newState,
